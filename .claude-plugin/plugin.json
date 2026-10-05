@@ -1,6 +1,6 @@
 {
   "name": "agent-autopilot",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Answers AskUserQuestion polls for you only when the assistant marked one option (Recommended) and nothing looks irreversible; default is a hint.",
   "author": {
     "name": "apolenkov",
@@ -21,7 +21,11 @@
       "type": "string",
       "title": "Mode",
       "description": "off: do nothing; hint: show a star under the recommended option, you still answer; auto: answer for you; /autopilot auto switches it on for one session only",
-      "options": ["off", "hint", "auto"],
+      "options": [
+        "off",
+        "hint",
+        "auto"
+      ],
       "default": "hint"
     },
     "limit": {
