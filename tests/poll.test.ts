@@ -48,6 +48,23 @@ describe("it answers only the plain, starred, harmless poll", () => {
     expect(seen.notices).toEqual([]);
   });
 
+  test("a text question has no options at all: the user answers, the journal says why", async ($, on) => {
+    const seen = world(on);
+    await $.session.start(START);
+    await run($, "auto");
+    await turn($, "t1");
+    const bare = {
+      question: "What name?",
+      header: "Name",
+      multiSelect: false,
+      kind: "text",
+    };
+    const result = await ask($, [bare]);
+    expect(result.text).toBe("the user answered");
+    expect(seen.polls).toHaveLength(1);
+    expect(await run($, "last")).toContain("вам: not-choice");
+  });
+
   test("no (Recommended): the user answers; two of them: the user answers", async ($, on) => {
     const seen = world(on);
     await $.session.start(START);

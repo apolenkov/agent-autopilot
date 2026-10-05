@@ -49,6 +49,38 @@ test("the star is read in the label, not in the description", () => {
   ).toEqual({ kind: "ask-human", reason: "no-recommended" });
 });
 
+describe("a warning is not a star", () => {
+  const warned = [
+    "Skip tests (not recommended)",
+    "Skip tests (Not Recommended)",
+    "Skip tests (non-recommended)",
+    "Skip tests (unrecommended)",
+    "Пропустить тесты (не рекомендую)",
+    "Пропустить тесты (не рекомендуется)",
+  ];
+  for (const label of warned) {
+    test(`${label} alone goes to the user`, () => {
+      expect(asked({ options: [{ label: "Run tests" }, { label }] })).toEqual(
+        human("no-recommended"),
+      );
+    });
+    test(`${label} beside a real star: the real star is picked`, () => {
+      expect(
+        asked({
+          options: [{ label }, { label: "Run tests (Recommended)" }],
+        }),
+      ).toEqual({ kind: "pick", label: "Run tests (Recommended)", index: 1 });
+    });
+  }
+});
+
+test("a text or number question has no options at all", () => {
+  expect(asked({ kind: "text", options: undefined })).toEqual(
+    human("not-choice"),
+  );
+  expect(asked({ options: undefined })).toEqual(human("few-options"));
+});
+
 describe("what goes to the user", () => {
   test("two questions", () => {
     expect(decide([question(), question()], CONFIG)).toEqual(
@@ -96,6 +128,19 @@ describe("what goes to the user", () => {
 });
 
 describe("the gate beats the star", () => {
+  test("the owner's example: a Russian label, git push --force in the description", () => {
+    expect(
+      asked({
+        options: [
+          {
+            label: "Продолжить по плану (Recommended)",
+            description: "git push --force в main",
+          },
+          { label: "Остановиться" },
+        ],
+      }),
+    ).toMatchObject({ kind: "ask-human", reason: "irreversible" });
+  });
   test("git push --force in the starred option's description", () => {
     const decision = asked({
       options: [

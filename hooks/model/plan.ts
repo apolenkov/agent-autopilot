@@ -5,7 +5,7 @@
 import type { AutopilotMode, AutopilotState } from "../../types";
 import type { Config } from "./config.ts";
 import type { Entry } from "./journal.ts";
-import { decide, type Question } from "./rule.ts";
+import { decide, optionsOf, type Question } from "./rule.ts";
 import { guardOf, type GuardReason, modeOf } from "./session.ts";
 
 /** The tool's result, as the output schema has it: the polls shown and the answers. */
@@ -43,7 +43,7 @@ const entryOf = (
   rest: Pick<Entry, "pick" | "reason" | "acted" | "gate">,
 ): Omit<Entry, "ts"> => ({
   question: question.question,
-  options: question.options.map((option) => option.label),
+  options: optionsOf(question).map((option) => option.label),
   mode,
   ...rest,
 });

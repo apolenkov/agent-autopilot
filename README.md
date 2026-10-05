@@ -19,8 +19,9 @@ goes to you as always:
 - it has exactly one question, single choice (no free text, no number, no
   multi-select, no "Other");
 - exactly one option has a label matching `/recommend|рекоменд/i`; Claude Code
-  writes it in lowercase by convention of the model, not by API, and two
-  matches mean you decide;
+  writes it in lowercase by convention of the model, not by API; two
+  matches mean you decide, and a warning ("not recommended", "не рекомендую")
+  is no star;
 - nothing in the question, labels, descriptions or previews looks irreversible:
   delete, force-push, publish, deploy, payments, secrets and access, `prod`,
   merge, kill and the like, plus your own words in `extraDeny`. This is a

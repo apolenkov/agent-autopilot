@@ -20,7 +20,8 @@ interface Option {
 export interface Question {
   readonly question: string;
   readonly header?: string | undefined;
-  readonly options: readonly Option[];
+  /** Absent on a text or number question. */
+  readonly options?: readonly Option[] | undefined;
   readonly multiSelect?: boolean | undefined;
   readonly kind?: unknown;
   readonly description?: unknown;
@@ -48,18 +49,31 @@ export type Decision =
   | Readonly<{ kind: "pick"; label: string; index: number }>;
 
 const MIN_OPTIONS = 2;
+
+/**
+ * The options of a question.
+ * @param question the question
+ * @returns its options; a text or number question has none
+ */
+export const optionsOf = (question: Question): readonly Option[] =>
+  question.options ?? [];
 // Claude Code's own convention, not the API's: `(Recommended)`, `(рекомендую)`.
 const RECOMMENDED = /recommend|рекоменд/iu;
+// "(not recommended)", "не рекомендую": a warning, not a star.
+const NEGATED = /\b(?:not|non|un)[\s-]*recommend|(?<!\p{L})не\s*рекоменд/iu;
 // An option that stands for "something else": no label to answer with.
 const OTHER = /^\s*(?:other|другое|иное|свой вариант)/iu;
 
+const isStar = (label: string): boolean =>
+  RECOMMENDED.test(label) && !NEGATED.test(label);
+
 const starredOf = (question: Question): readonly number[] =>
-  question.options
-    .map((option, index) => (RECOMMENDED.test(option.label) ? index : -1))
+  optionsOf(question)
+    .map((option, index) => (isStar(option.label) ? index : -1))
     .filter((index) => index !== -1);
 
 const labelOfStar = (question: Question): string =>
-  question.options[starredOf(question)[0] ?? -1]?.label ?? "";
+  optionsOf(question)[starredOf(question)[0] ?? -1]?.label ?? "";
 
 // In order: the first that holds is the reason. `other` is last, as it reads
 // the one starred option, which the two before it make sure there is.
@@ -72,7 +86,7 @@ const CHECKS: readonly (readonly [
     "not-choice",
     (question) => question.kind !== undefined && question.kind !== "choice",
   ],
-  ["few-options", (question) => question.options.length < MIN_OPTIONS],
+  ["few-options", (question) => optionsOf(question).length < MIN_OPTIONS],
   ["no-recommended", (question) => starredOf(question).length === 0],
   ["many-recommended", (question) => starredOf(question).length > 1],
   ["other", (question) => OTHER.test(labelOfStar(question))],
@@ -84,7 +98,7 @@ const textsOf = (question: Question): readonly string[] => [
   question.question,
   question.header ?? "",
   typeof question.description === "string" ? question.description : "",
-  ...question.options.flatMap((option) => [
+  ...optionsOf(question).flatMap((option) => [
     option.label,
     option.description ?? "",
     option.preview ?? "",
