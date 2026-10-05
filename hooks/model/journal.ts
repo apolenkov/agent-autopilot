@@ -7,7 +7,7 @@ import type { AskReason } from "./rule.ts";
 import type { GuardReason } from "./session.ts";
 
 /** The reason of an entry: the rule's pick, or why a poll went to the user. */
-export type Reason = "recommended" | AskReason | GuardReason;
+type Reason = "recommended" | AskReason | GuardReason;
 
 /** One poll the autopilot looked at. */
 export interface Entry {

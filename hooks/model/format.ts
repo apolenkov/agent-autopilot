@@ -7,9 +7,9 @@ import { type Entry, lastOf, linesOf } from "./journal.ts";
 import { modeOf } from "./session.ts";
 
 /** How many journal lines `/autopilot status` shows. */
-export const STATUS_LINES = 3;
+const STATUS_LINES = 3;
 /** How many journal lines `/autopilot last` shows. */
-export const LAST_LINES = 10;
+const LAST_LINES = 10;
 
 /** What `/autopilot` with a wrong word says. */
 export const USAGE =

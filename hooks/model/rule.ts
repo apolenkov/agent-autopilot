@@ -7,7 +7,7 @@ import type { Config } from "./config.ts";
 import { irreversibleIn } from "./gate.ts";
 
 /** One choice of a poll, as the tool shows it. */
-export interface Option {
+interface Option {
   readonly label: string;
   readonly description?: string | undefined;
   readonly preview?: string | undefined;
