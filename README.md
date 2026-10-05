@@ -10,9 +10,6 @@ only when the assistant itself marked one option "(Recommended)" and nothing in
 the poll looks irreversible. The default mode only hints; it answers for you
 when you switch it on, for the current session.
 
-> Status: scaffold. The rule, modes and journal below are the design (see
-> `/autopilot`); the code for them is not written yet.
-
 ## The rule
 
 A poll is answered by the autopilot only when all of these hold; otherwise it
@@ -44,13 +41,16 @@ owner's choice in 80% of the 50 polls it covered (71% coverage).
 | `hint` | default: a separate line under the poll, `autopilot: ★ <label>`; the poll stays yours to answer |
 | `auto` | answers for you, tells the assistant it did, writes the journal                                 |
 
-`auto` lasts for the session only: `/autopilot auto` switches it on, a new
-session starts again in the mode from the settings (`hint` by default). The
+`auto` set with `/autopilot auto` lasts for the session only: a new session
+(also after `/clear`) starts again in the mode from the settings (`hint` by
+default; a `mode` of `auto` in the settings is your standing choice). The
 status line shows it, for example `AP auto 2/5`. The ★ is its own line, not
 part of the label.
 
-Commands: `/autopilot status | off | hint | auto | last | ask`; `ask` answers
-nothing, it asks you the last poll again through the prompt box.
+Commands: `/autopilot status | off | hint | auto | last | ask`. `last` lists
+the journal; `ask` puts the last automatic answer to you again in the engine's
+dialog and, if you pick another option, leaves a correction note in the prompt
+box for you to send (where there is no dialog, it says so).
 
 ## Limits and honesty
 
@@ -81,12 +81,12 @@ Or try a checkout: `claude --plugin-dir /path/to/agent-autopilot`.
 
 ## Settings
 
-| Setting     | Default | Meaning                                                                  |
-| ----------- | ------- | ------------------------------------------------------------------------ |
-| `mode`      | `hint`  | `off`, `hint` or `auto` at the start of a session                        |
-| `limit`     | 5       | most polls answered for you per session                                  |
-| `extraDeny` | empty   | `\|`-separated words that send a poll to you, added to the built-in list |
-| `logSize`   | 100     | journal entries kept per session                                         |
+| Setting     | Default | Meaning                                                                   |
+| ----------- | ------- | ------------------------------------------------------------------------- |
+| `mode`      | `hint`  | `off`, `hint` or `auto` at the start of a session                         |
+| `limit`     | 5       | most polls answered for you per session                                   |
+| `extraDeny` | empty   | comma-separated words that send a poll to you, added to the built-in list |
+| `logSize`   | 100     | journal entries kept per session                                          |
 
 See [SECURITY.md](SECURITY.md) for what it sees and keeps, and
 [CONTRIBUTING.md](CONTRIBUTING.md) to work on it.

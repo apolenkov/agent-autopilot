@@ -20,7 +20,7 @@
     "mode": {
       "type": "string",
       "title": "Mode",
-      "description": "off: do nothing; hint: show a star under the recommended option, you still answer; auto: answer for you (this session only, switched on with /autopilot auto)",
+      "description": "off: do nothing; hint: show a star under the recommended option, you still answer; auto: answer for you; /autopilot auto switches it on for one session only",
       "options": ["off", "hint", "auto"],
       "default": "hint"
     },
@@ -33,7 +33,7 @@
     "extraDeny": {
       "type": "string",
       "title": "Extra irreversible words",
-      "description": "|-separated words (regular expression) that send a poll to you, added to the built-in list",
+      "description": "Comma-separated words that send a poll to you, added to the built-in list; matched as whole words (Cyrillic ones by their start)",
       "default": ""
     },
     "logSize": {
