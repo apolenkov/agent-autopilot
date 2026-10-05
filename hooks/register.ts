@@ -17,6 +17,7 @@ import { commandOf } from "./model/command.ts";
 import { type Config, configOf } from "./model/config.ts";
 import {
   correctionOf,
+  DIALOG_SHUT,
   lastTextOf,
   modeSetTextOf,
   statusLineOf,
@@ -152,20 +153,6 @@ const setMode = async (
   return modeSetTextOf(mode);
 };
 
-const askAgain = async (
-  $: Engine,
-  last: Entry,
-): Promise<string | undefined> => {
-  try {
-    return await $.ui.ask(last.question, {
-      options: last.options,
-      header: HEADER,
-    });
-  } catch {
-    return undefined;
-  }
-};
-
 // The poll is put to the user once more, in the engine's own dialog, over the
 // options the autopilot chose from; a different pick becomes a note in the
 // prompt box, for the user to send.
@@ -176,15 +163,21 @@ const correct = async ($: Engine): Promise<string> => {
   if (last === undefined || picked === null || picked === undefined) {
     return "autopilot: автоответов в этой сессии не было";
   }
-  const chosen = await askAgain($, last);
-  if (chosen === undefined) {
-    return "autopilot: ask здесь недоступен, у этой поверхности нет диалога";
+  try {
+    const chosen = await $.ui.ask(last.question, {
+      options: last.options,
+      header: HEADER,
+    });
+    if (chosen === picked) {
+      return `autopilot: «${chosen}», как и ответил автопилот, поправки нет`;
+    }
+    await $.prompt.suggest({
+      text: correctionOf(last.question, chosen, picked),
+    });
+    return "autopilot: поправка лежит в строке ввода, отправьте её";
+  } catch {
+    return DIALOG_SHUT;
   }
-  if (chosen === picked) {
-    return `autopilot: «${chosen}», как и ответил автопилот, поправки нет`;
-  }
-  await $.prompt.suggest({ text: correctionOf(last.question, chosen, picked) });
-  return "autopilot: поправка лежит в строке ввода, отправьте её";
 };
 
 const commandText = async (

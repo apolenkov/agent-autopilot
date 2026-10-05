@@ -11,6 +11,8 @@ export interface World {
   isDialogShut: boolean;
   /** True: `$.session.id` throws, which breaks every hook of the plugin. */
   isBroken: boolean;
+  /** True: the prompt box cannot take a note. */
+  isPromptShut: boolean;
   /** True: the line under a dialog cannot be drawn. */
   isNoticeShut: boolean;
   /** The polls that reached the user: what the autopilot let through. */
@@ -35,6 +37,7 @@ export const world = (on: On): World => {
     isDialogShut: false,
     isBroken: false,
     isNoticeShut: false,
+    isPromptShut: false,
     polls: [],
     registered: [],
     notices: [],
@@ -67,6 +70,9 @@ export const world = (on: On): World => {
     return { value: undefined };
   });
   on("prompt.suggest", (_$, e) => {
+    if (seen.isPromptShut) {
+      throw new Error("no prompt box");
+    }
     seen.suggested.push(e.text);
     return { isShown: true };
   });

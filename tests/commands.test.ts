@@ -64,7 +64,19 @@ describe("/autopilot", () => {
     await turn($, "t1");
     await ask($, [poll()]);
     seen.isDialogShut = true;
-    expect(await run($, "ask")).toContain("недоступен");
+    expect(await run($, "ask")).toContain("диалог закрыт или недоступен");
+    expect(seen.suggested).toEqual([]);
+  });
+
+  test("ask: a prompt box that cannot take the note says the same", async ($, on) => {
+    const seen = world(on);
+    await $.session.start(START);
+    await run($, "auto");
+    await turn($, "t1");
+    await ask($, [poll()]);
+    seen.userAnswer = "Rethink";
+    seen.isPromptShut = true;
+    expect(await run($, "ask")).toContain("диалог закрыт или недоступен");
     expect(seen.suggested).toEqual([]);
   });
 });

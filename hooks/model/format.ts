@@ -15,6 +15,9 @@ const LAST_LINES = 10;
 export const USAGE =
   "autopilot: /autopilot status | off | hint | auto | last | ask";
 
+/** What `/autopilot ask` says when the dialog or the prompt box is not there. */
+export const DIALOG_SHUT = "autopilot: диалог закрыт или недоступен";
+
 /**
  * The status line: only `auto` shows one, as it is the mode that acts.
  * @param mode the mode in force
