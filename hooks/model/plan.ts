@@ -65,7 +65,8 @@ const answered = (poll: Poll, seen: Seen, label: string): Plan => ({
 });
 
 // A loop, or a second answer in a turn: nothing shown, the user's alone. The
-// limit and the hint show the star the autopilot would have answered with.
+// limit and the hint show the star the autopilot would have answered with;
+// shadow shows nothing but still writes the star down.
 const held = (
   seen: Seen,
   label: string,
@@ -76,7 +77,7 @@ const held = (
   const stated =
     guard === "limit" ? `лимит ${String(limit)}, ★ ${label}` : `★ ${label}`;
   return {
-    ...(!isSilent && { notice: stated }),
+    ...(!isSilent && seen.mode !== "shadow" && { notice: stated }),
     entry: entryOf(seen, {
       pick: isSilent ? null : label,
       reason: guard ?? "recommended",

@@ -105,3 +105,9 @@ test("a line says what the user answered", () => {
     "★ «A (Recommended)» → вы: «B»",
   );
 });
+
+test("a shadow line says only that it was written down", () => {
+  expect(lineOf(entry({ acted: false, mode: "shadow", chosen: "B" }))).toBe(
+    "12:03:11 «Which way?» записано [shadow]",
+  );
+});

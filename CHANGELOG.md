@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0](https://github.com/apolenkov/agent-autopilot/compare/v0.1.0...v0.1.0) (2026-10-05)
+
+
+### Features
+
+* **agent-autopilot:** journal the user's own pick and measure the star's agreement ([#5](https://github.com/apolenkov/agent-autopilot/issues/5)) ([e1aabac](https://github.com/apolenkov/agent-autopilot/commit/e1aabac74ef34e0eb002d9211e4247fb825d3b7b))
+
 ## 0.1.0 (2026-10-05)
 
 

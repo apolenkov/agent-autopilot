@@ -9,7 +9,7 @@ import path from "node:path";
 import process from "node:process";
 
 import { linesOfReport, reportOf } from "../hooks/model/agreement.ts";
-import { entriesOf } from "../hooks/model/journal.ts";
+import { entriesOf, type Entry } from "../hooks/model/journal.ts";
 
 const ARGS_SKIPPED = 2;
 const directory = path.join(homedir(), ".claude", "plugins", "store");
@@ -27,8 +27,12 @@ const held = stores.flatMap((file) =>
   ).filter(([key]) => key.startsWith("log:")),
 );
 const entries = held.flatMap(([, raw]) => entriesOf(raw));
+const isBlind = (entry: Entry): boolean => entry.mode === "shadow";
 const lines = [
   `журналов: ${String(held.length)}`,
-  ...linesOfReport(reportOf(entries)),
+  "== ЗАМЕР (shadow: ★ человеку не показан) ==",
+  ...linesOfReport(reportOf(entries.filter((entry) => isBlind(entry)))),
+  "== ПОТОЛОК (hint и auto: ★ был на экране, вывода не даёт) ==",
+  ...linesOfReport(reportOf(entries.filter((entry) => !isBlind(entry)))),
 ];
 process.stdout.write(`${lines.join("\n")}\n`);

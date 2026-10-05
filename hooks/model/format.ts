@@ -13,7 +13,7 @@ const LAST_LINES = 10;
 
 /** What `/autopilot` with a wrong word says. */
 export const USAGE =
-  "autopilot: /autopilot status | off | hint | auto | last | ask";
+  "autopilot: /autopilot status | off | hint | auto | shadow | last | ask";
 
 /** What `/autopilot ask` says when the dialog or the prompt box is not there. */
 export const DIALOG_SHUT = "autopilot: диалог закрыт или недоступен";
@@ -38,6 +38,7 @@ const MODE_TEXT: Readonly<Record<AutopilotMode, string>> = {
   off: "off: вопросы не трогает",
   hint: "hint: ★ у рекомендованного варианта, отвечаете вы",
   auto: "auto: отвечает за вас, только в этой сессии",
+  shadow: "shadow: ничего не показывает, пишет журнал для замера",
 };
 
 /**

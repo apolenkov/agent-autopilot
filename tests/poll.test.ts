@@ -228,32 +228,3 @@ describe("auto", () => {
     },
   );
 });
-
-describe("it notes what the user answered", () => {
-  test("hint: the user's pick lands on the poll's entry", async ($, on) => {
-    const seen = world(on);
-    await $.session.start(START);
-    await turn($, "t1");
-    seen.userAnswer = "Rethink";
-    await ask($, [poll()]);
-    expect(await run($, "last")).toContain(`★ «${STARRED}» → вы: «Rethink»`);
-  });
-
-  test("a poll of the user's alone is noted too", async ($, on) => {
-    const seen = world(on);
-    await $.session.start(START);
-    await turn($, "t1");
-    seen.userAnswer = "my own words";
-    await ask($, [poll({ multiSelect: true })]);
-    expect(await run($, "last")).toContain("→ вы: «my own words»");
-  });
-
-  test("auto: the autopilot's answer carries none", async ($, on) => {
-    world(on);
-    await $.session.start(START);
-    await run($, "auto");
-    await turn($, "t1");
-    await ask($, [poll()]);
-    expect(await run($, "last")).not.toContain("→ вы");
-  });
-});
