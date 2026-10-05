@@ -13,6 +13,8 @@ export interface World {
   isBroken: boolean;
   /** True: the prompt box cannot take a note. */
   isPromptShut: boolean;
+  /** True: the engine takes the suggestion but does not show it. */
+  isSuggestHidden: boolean;
   /** True: the line under a dialog cannot be drawn. */
   isNoticeShut: boolean;
   /** The polls that reached the user: what the autopilot let through. */
@@ -38,6 +40,7 @@ export const world = (on: On): World => {
     isBroken: false,
     isNoticeShut: false,
     isPromptShut: false,
+    isSuggestHidden: false,
     polls: [],
     registered: [],
     notices: [],
@@ -74,7 +77,7 @@ export const world = (on: On): World => {
       throw new Error("no prompt box");
     }
     seen.suggested.push(e.text);
-    return { isShown: true };
+    return { isShown: !seen.isSuggestHidden };
   });
   on("tool.call", { tool: "AskUserQuestion" }, (_$, e) => {
     if (seen.isDialogShut) {
