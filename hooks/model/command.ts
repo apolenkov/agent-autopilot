@@ -17,6 +17,7 @@ const WORDS = new Map<string, Command>([
   ["off", { kind: "mode", mode: "off" }],
   ["hint", { kind: "mode", mode: "hint" }],
   ["auto", { kind: "mode", mode: "auto" }],
+  ["shadow", { kind: "mode", mode: "shadow" }],
 ]);
 
 /**

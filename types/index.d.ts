@@ -1,5 +1,5 @@
-/** What the autopilot does with a poll: nothing, show a star, or answer. */
-export type AutopilotMode = "off" | "hint" | "auto";
+/** What the autopilot does with a poll: nothing, show a star, answer, or only record. */
+export type AutopilotMode = "off" | "hint" | "auto" | "shadow";
 
 /** What the autopilot has done in this session, kept across a hot reload. */
 export interface AutopilotState {

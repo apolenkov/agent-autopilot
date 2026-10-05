@@ -41,11 +41,12 @@ owner's choice in 80% of the 50 polls it covered (71% coverage).
 
 ## Modes
 
-| Mode   | What it does                                                                         |
-| ------ | ------------------------------------------------------------------------------------ |
-| `off`  | nothing                                                                              |
-| `hint` | default: a separate line under the poll, `★ <label>`; the poll stays yours to answer |
-| `auto` | answers for you, tells the assistant it did                                          |
+| Mode     | What it does                                                                         |
+| -------- | ------------------------------------------------------------------------------------ |
+| `off`    | nothing                                                                              |
+| `hint`   | default: a separate line under the poll, `★ <label>`; the poll stays yours to answer |
+| `auto`   | answers for you, tells the assistant it did                                          |
+| `shadow` | shows nothing and answers nothing: only writes the star and your pick to the journal |
 
 In `hint` and `auto` the journal records every poll the autopilot sees (the
 question, the options, the decision), whether it answered or left the poll to you.
@@ -58,24 +59,30 @@ default; a `mode` of `auto` in the settings is your standing choice). The
 status line shows it, for example `AP auto 2/5`. The ★ is its own line, not
 part of the label.
 
-Commands: `/autopilot status | off | hint | auto | last | ask`. `last` lists
+Commands: `/autopilot status | off | hint | auto | shadow | last | ask`. `last` lists
 the journal; `ask` puts the last automatic answer to you again in the engine's
 dialog and, if you pick another option, leaves a correction note in the prompt
 box for you to send (where there is no dialog, it says so).
 
 ## Does the star match your pick?
 
-`node scripts/agreement.ts` reads the journals of every session and prints the
-share of polls where you picked the starred option, with its 95% Wilson
-interval, the split by number of options, by whether the star stood first, and
-by reason, and each poll where you picked another option. Only polls you
-answered yourself with a star on them count. The ★ is on screen when you pick,
-so the share can run high: it is a ceiling, not a blind measure.
+Work in `shadow` for a while (`"mode": "shadow"` in the settings, or
+`/autopilot shadow` for one session): nothing is shown, every poll you answer
+is journaled with the star the rule would have put and your own pick. In
+`shadow`, `/autopilot last` shows only that a poll was written down: no star,
+no pick, so you do not see the hint before the measure is done.
 
-Reading it: under 30 measured polls the verdict is «мало данных». It is
+`node scripts/agreement.ts` reads the journals of every session and prints two
+blocks. **ЗАМЕР** counts `shadow` polls only: the share where you picked the
+starred option, its 95% Wilson interval, the split by number of options, by
+whether the star stood first, and by reason, and each poll where you picked
+another option. **ПОТОЛОК** counts `hint` and `auto` polls, where the star was
+on screen when you picked: it can only run high, and gives no verdict.
+
+Reading the ЗАМЕР: under 30 measured polls the verdict is «мало данных». It is
 «достаточно» when the lower bound of the interval is above 80% (observed 90%
 needs about 54 polls, 95% about 25, 10 of 10 is not enough: its lower bound is
-72%).
+72%); count polls from 5 sessions or more.
 
 ## Limits and honesty
 
