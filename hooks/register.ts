@@ -24,7 +24,14 @@ import {
   statusTextOf,
   USAGE,
 } from "./model/format.ts";
-import { appended, entriesOf, type Entry, keyOf } from "./model/journal.ts";
+import {
+  appended,
+  chosenOf,
+  entriesOf,
+  type Entry,
+  keyOf,
+  settled,
+} from "./model/journal.ts";
 import { planOf } from "./model/plan.ts";
 import {
   answered,
@@ -121,6 +128,26 @@ const answerOf = async (
   } catch {
     return undefined;
   }
+};
+
+// What the user answered goes onto the poll's entry: the measure of how often
+// the star is what they would have picked.
+const settle = async (
+  $: Engine,
+  e: Readonly<PollInput>,
+  outcome: unknown,
+): Promise<void> => {
+  const [asked] = e.questions;
+  const chosen =
+    asked === undefined ? undefined : chosenOf(outcome, asked.question);
+  if (asked === undefined || chosen === undefined) {
+    return;
+  }
+  const key = keyOf(await $.session.id());
+  await $.store.set(
+    key,
+    settled(await $.store.get(key), asked.question, chosen),
+  );
 };
 
 // A hook that cannot do its bookkeeping must still let the work go on.
@@ -230,7 +257,14 @@ export const register: Register = (on, options) => {
     const isModel =
       next.origin.plugin === "engine" && next.origin.tier === "core";
     const answer = isModel ? await answerOf($, config, e) : undefined;
-    return answer ?? next(e);
+    if (answer !== undefined) {
+      return answer;
+    }
+    const outcome = await next(e);
+    if (isModel) {
+      await quietly(settle($, e, outcome));
+    }
+    return outcome;
   });
   on("command.run", { command: COMMAND }, async ($, e) => ({
     text: await commandText($, config, e.args),
