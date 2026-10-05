@@ -33,6 +33,11 @@ const LATIN = [
   "rotate",
   "merge",
   "kill",
+  "remove",
+  "discard",
+  "erase",
+  "destroy",
+  "uninstall",
 ] as const;
 // Words that do not inflect, or whose forms are not regular.
 const LATIN_EXACT = [
@@ -41,8 +46,13 @@ const LATIN_EXACT = [
   "payment",
   "overwritten",
   "sent",
+  "deletion",
+  "deployment",
+  "payments",
+  "paid",
 ] as const;
-// Stems: Cyrillic words are matched by their start, as they decline.
+// Stems: Cyrillic words decline and take prefixes (поудалять), so a stem is
+// matched anywhere in a word; a false hit ("недоступен") costs one question.
 const CYRILLIC = [
   "удал",
   "публикац",
@@ -54,13 +64,21 @@ const CYRILLIC = [
   "перезапис",
   "сброс",
   "откат",
-  "деплой",
+  "депло",
   "токен",
   "секрет",
   "принудительн",
+  "пуш",
+  "мерж",
+  "форс",
+  "стер",
+  "очист",
+  "снес",
+  "выкат",
 ] as const;
 const PHRASES = [
   String.raw`chezmoi\s+apply`,
+  String.raw`git\s+clean`,
   String.raw`backlog[^\n]*--delete`,
 ] as const;
 
@@ -93,7 +111,7 @@ const sourceOf = (extraDeny: readonly string[]): string =>
   [
     ...LATIN.map((word) => `${BEFORE}${inflected(word)}${AFTER}`),
     ...LATIN_EXACT.map((word) => `${BEFORE}${word}${AFTER}`),
-    ...CYRILLIC.map((stem) => `${BEFORE}${stem}`),
+    ...CYRILLIC,
     ...PHRASES,
     ...extraDeny
       .filter((word) => word.trim() !== "")

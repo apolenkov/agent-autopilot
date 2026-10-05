@@ -51,6 +51,25 @@ describe("irreversible acts are caught, in every form", () => {
     "выдать доступ",
     "остановить сервис",
     "принудительный пуш",
+    "Remove the old config",
+    "deletion of the branch",
+    "payments table",
+    "deployment",
+    "Paid",
+    "Discard",
+    "Erase",
+    "Destroy",
+    "Uninstall",
+    "git clean -fdx",
+    "Запушить",
+    "Смержить",
+    "Задеплоить",
+    "Поудалять",
+    "Форс-пуш",
+    "Стереть",
+    "Очистить кэш",
+    "Снести",
+    "Выкатить",
   ]) {
     test(text, () => {
       expect(isHit(text)).toBe(true);
@@ -79,6 +98,12 @@ describe("words inside other words are not hits", () => {
       expect(isHit(text)).toBe(false);
     });
   }
+});
+
+// By design the gate errs wide: a Cyrillic stem is matched anywhere in a word,
+// so "недоступно" trips `доступ`; a false hit costs one question to the user.
+test("a Cyrillic stem inside a longer word is a hit, on purpose", () => {
+  expect(isHit("Сервис недоступен")).toBe(true);
 });
 
 describe("prod counts as a whole word only", () => {
