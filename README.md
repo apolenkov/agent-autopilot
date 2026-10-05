@@ -1,0 +1,94 @@
+# agent-autopilot
+
+[![ci](https://github.com/apolenkov/agent-autopilot/actions/workflows/ci.yml/badge.svg)](https://github.com/apolenkov/agent-autopilot/actions/workflows/ci.yml)
+[![codeql](https://github.com/apolenkov/agent-autopilot/actions/workflows/codeql.yml/badge.svg)](https://github.com/apolenkov/agent-autopilot/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/apolenkov/agent-autopilot/badge)](https://scorecard.dev/viewer/?uri=github.com/apolenkov/agent-autopilot)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+A Claude Code mod that answers the assistant's `AskUserQuestion` polls for you,
+only when the assistant itself marked one option "(Recommended)" and nothing in
+the poll looks irreversible. The default mode only hints; it answers for you
+when you switch it on, for the current session.
+
+> Status: scaffold. The rule, modes and journal below are the design (see
+> `/autopilot`); the code for them is not written yet.
+
+## The rule
+
+A poll is answered by the autopilot only when all of these hold; otherwise it
+goes to you as always:
+
+- the assistant raised it (not another mod's `$.ui.ask`);
+- it has exactly one question, single choice (no free text, no number, no
+  multi-select, no "Other");
+- exactly one option has a label matching `/recommend|рекоменд/i`; Claude Code
+  writes it in lowercase by convention of the model, not by API, and two
+  matches mean you decide;
+- nothing in the question, labels, descriptions or previews looks irreversible:
+  delete, force-push, publish, deploy, payments, secrets and access, `prod`,
+  merge, kill and the like, plus your own words in `extraDeny`. This is a
+  keyword gate on the text, not an understanding of intent;
+- the limit is not used up, no poll was answered earlier in this turn, and the
+  same question text was not already answered automatically this session (a
+  repeat means the assistant drifts).
+
+No model decides anything: the rule is deterministic and nothing goes over the
+network. On the owner's own 70 polls, following "(Recommended)" matched the
+owner's choice in 80% of the 50 polls it covered (71% coverage).
+
+## Modes
+
+| Mode   | What it does                                                                                    |
+| ------ | ----------------------------------------------------------------------------------------------- |
+| `off`  | nothing                                                                                         |
+| `hint` | default: a separate line under the poll, `autopilot: ★ <label>`; the poll stays yours to answer |
+| `auto` | answers for you, tells the assistant it did, writes the journal                                 |
+
+`auto` lasts for the session only: `/autopilot auto` switches it on, a new
+session starts again in the mode from the settings (`hint` by default). The
+status line shows it, for example `AP auto 2/5`. The ★ is its own line, not
+part of the label.
+
+Commands: `/autopilot status | off | hint | auto | last | ask`; `ask` answers
+nothing, it asks you the last poll again through the prompt box.
+
+## Limits and honesty
+
+- **No undo.** An automatic answer is an answer: the assistant carries on with
+  it, and whatever it then does is not rolled back.
+- **Indistinguishable in the transcript.** The tool result looks exactly like
+  one you gave. The marker is the note added to the assistant's context
+  ("answered by the autopilot by the rule (Recommended)") and the journal
+  (`/autopilot last`); nothing in the transcript tells them apart.
+- **Interactive sessions only.** In `claude -p` and in subagents the assistant
+  has no `AskUserQuestion`, so there is nothing to answer there.
+- **A wrong recommendation stays wrong.** If the assistant recommends badly, the
+  autopilot follows it with confidence, up to 5 times per session (`limit`).
+  Keep `hint` unless you watch the session.
+- **Not a permission tool.** Permission prompts are the job of Claude Code's own
+  auto mode; plan approval (`ExitPlanMode`) is never answered.
+
+## Install
+
+Claude Code 2.1.289 or newer (mods are on by default).
+
+```sh
+claude plugin marketplace add apolenkov/agent-autopilot
+claude plugin install agent-autopilot@agent-autopilot
+```
+
+Or try a checkout: `claude --plugin-dir /path/to/agent-autopilot`.
+
+## Settings
+
+| Setting     | Default | Meaning                                                                  |
+| ----------- | ------- | ------------------------------------------------------------------------ |
+| `mode`      | `hint`  | `off`, `hint` or `auto` at the start of a session                        |
+| `limit`     | 5       | most polls answered for you per session                                  |
+| `extraDeny` | empty   | `\|`-separated words that send a poll to you, added to the built-in list |
+| `logSize`   | 100     | journal entries kept per session                                         |
+
+See [SECURITY.md](SECURITY.md) for what it sees and keeps, and
+[CONTRIBUTING.md](CONTRIBUTING.md) to work on it.
+
+`engine-types/` holds Claude Code's own API declarations, © Anthropic PBC and not covered by the MIT license; see [engine-types/NOTICE.md](engine-types/NOTICE.md).

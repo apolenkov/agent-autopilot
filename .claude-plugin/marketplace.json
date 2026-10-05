@@ -1,0 +1,17 @@
+{
+  "name": "agent-autopilot",
+  "owner": {
+    "name": "apolenkov",
+    "url": "https://github.com/apolenkov"
+  },
+  "metadata": {
+    "description": "Answers AskUserQuestion polls for you only when the assistant marked one option (Recommended) and nothing looks irreversible; default is a hint."
+  },
+  "plugins": [
+    {
+      "name": "agent-autopilot",
+      "source": "./",
+      "description": "Answers AskUserQuestion polls for you only when the assistant marked one option (Recommended) and nothing looks irreversible; default is a hint."
+    }
+  ]
+}

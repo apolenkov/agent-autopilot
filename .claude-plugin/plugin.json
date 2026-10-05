@@ -1,0 +1,46 @@
+{
+  "name": "agent-autopilot",
+  "version": "0.0.0",
+  "description": "Answers AskUserQuestion polls for you only when the assistant marked one option (Recommended) and nothing looks irreversible; default is a hint.",
+  "author": {
+    "name": "apolenkov",
+    "url": "https://github.com/apolenkov"
+  },
+  "repository": "https://github.com/apolenkov/agent-autopilot",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "autopilot",
+    "AskUserQuestion",
+    "polls"
+  ],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "mode": {
+      "type": "string",
+      "title": "Mode",
+      "description": "off: do nothing; hint: show a star under the recommended option, you still answer; auto: answer for you (this session only, switched on with /autopilot auto)",
+      "options": ["off", "hint", "auto"],
+      "default": "hint"
+    },
+    "limit": {
+      "type": "number",
+      "title": "Answers per session",
+      "description": "Most polls answered for you in one session; the next ones go to you",
+      "default": 5
+    },
+    "extraDeny": {
+      "type": "string",
+      "title": "Extra irreversible words",
+      "description": "|-separated words (regular expression) that send a poll to you, added to the built-in list",
+      "default": ""
+    },
+    "logSize": {
+      "type": "number",
+      "title": "Journal size",
+      "description": "Entries of the answer journal kept per session",
+      "default": 100
+    }
+  }
+}
