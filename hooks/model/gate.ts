@@ -38,6 +38,7 @@ const LATIN = [
   "erase",
   "destroy",
   "uninstall",
+  "nuke",
 ] as const;
 // Words that do not inflect, or whose forms are not regular.
 const LATIN_EXACT = [

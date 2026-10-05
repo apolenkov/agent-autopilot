@@ -88,7 +88,7 @@ describe("hint", () => {
     const seen = world(on);
     await $.session.start(START);
     const result = await ask($, [poll()]);
-    expect(seen.notices).toEqual([`autopilot: ★ ${STARRED}`]);
+    expect(seen.notices).toEqual([`★ ${STARRED}`]);
     expect(seen.polls).toHaveLength(1);
     expect(result.text).toBe("the user answered");
     expect(result).toMatchObject({
@@ -156,7 +156,7 @@ describe("auto", () => {
     const result = await ask($, [poll({ question: "Poll 6?" })]);
     expect(result.text).toBe("the user answered");
     expect(seen.polls).toHaveLength(1);
-    expect(seen.notices.at(-1)).toBe(`autopilot: лимит 5, ★ ${STARRED}`);
+    expect(seen.notices.at(-1)).toBe(`лимит 5, ★ ${STARRED}`);
   });
 
   test(

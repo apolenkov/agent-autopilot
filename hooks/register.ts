@@ -171,10 +171,12 @@ const correct = async ($: Engine): Promise<string> => {
     if (chosen === picked) {
       return `autopilot: «${chosen}», как и ответил автопилот, поправки нет`;
     }
-    await $.prompt.suggest({
-      text: correctionOf(last.question, chosen, picked),
-    });
-    return "autopilot: поправка лежит в строке ввода, отправьте её";
+    const note = correctionOf(last.question, chosen, picked);
+    const { isShown } = await $.prompt.suggest({ text: note });
+    // The engine shows no suggestion while a turn runs or headless.
+    return isShown
+      ? "autopilot: поправка лежит в строке ввода, отправьте её"
+      : `autopilot: строка ввода занята, отправьте поправку сами: ${note}`;
   } catch {
     return DIALOG_SHUT;
   }

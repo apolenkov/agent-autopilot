@@ -45,6 +45,17 @@ describe("/autopilot", () => {
     ]);
   });
 
+  test("ask: a hidden suggestion puts the note in the reply", async ($, on) => {
+    const seen = world(on);
+    await $.session.start(START);
+    await run($, "auto");
+    await turn($, "t1");
+    await ask($, [poll()]);
+    seen.userAnswer = "Rethink";
+    seen.isSuggestHidden = true;
+    expect(await run($, "ask")).toContain("Поправка: на «How do we go on?»");
+  });
+
   test("ask: the same pick needs no correction", async ($, on) => {
     const seen = world(on);
     await $.session.start(START);

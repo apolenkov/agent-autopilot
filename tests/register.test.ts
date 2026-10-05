@@ -69,7 +69,7 @@ describe("a session of its own", () => {
     await turn($, "t1");
     await ask($, [poll()]);
     expect(seen.polls).toHaveLength(1);
-    expect(seen.notices).toEqual([`autopilot: ★ ${STARRED}`]);
+    expect(seen.notices).toEqual([`★ ${STARRED}`]);
     expect(await run($, "status")).toContain("hint");
   });
 

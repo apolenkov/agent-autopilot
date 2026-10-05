@@ -76,7 +76,7 @@ const held = (
   const stated =
     guard === "limit" ? `лимит ${String(limit)}, ★ ${label}` : `★ ${label}`;
   return {
-    ...(!isSilent && { notice: `autopilot: ${stated}` }),
+    ...(!isSilent && { notice: stated }),
     entry: entryOf(seen, {
       pick: isSilent ? null : label,
       reason: guard ?? "recommended",

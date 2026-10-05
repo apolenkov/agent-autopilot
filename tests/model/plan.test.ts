@@ -31,7 +31,7 @@ test("off plans nothing", () => {
 
 test("hint stars the option and journals it unacted", () => {
   expect(plan("hint")).toEqual({
-    notice: `autopilot: ★ ${STARRED}`,
+    notice: `★ ${STARRED}`,
     entry: {
       question: "Which way?",
       options: [STARRED, "Stop"],
@@ -79,7 +79,7 @@ test("the limit turns auto into a starred hint with a word on the limit", () => 
   const spent = answered(answered(initialOf("s1"), "a?"), "b?");
   const planned = plan("auto", [poll()], spent);
   expect(planned.answer).toBeUndefined();
-  expect(planned.notice).toBe(`autopilot: лимит 2, ★ ${STARRED}`);
+  expect(planned.notice).toBe(`лимит 2, ★ ${STARRED}`);
   expect(planned.entry).toMatchObject({ reason: "limit", pick: STARRED });
 });
 
@@ -96,5 +96,5 @@ test("a loop and a second answer in a turn are silent and the user's alone", () 
 
 test("hint ignores the session's guards", () => {
   const spent = answered(answered(initialOf("s1"), "Which way?"), "b?");
-  expect(plan("hint", [poll()], spent).notice).toBe(`autopilot: ★ ${STARRED}`);
+  expect(plan("hint", [poll()], spent).notice).toBe(`★ ${STARRED}`);
 });

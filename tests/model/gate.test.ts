@@ -12,6 +12,7 @@ describe("irreversible acts are caught, in every form", () => {
     "Pushed to origin",
     "pushing now",
     "delete the file",
+    "Nuke it",
     "files deleted",
     "deleting everything",
     "tables dropped",

@@ -36,11 +36,11 @@ owner's choice in 80% of the 50 polls it covered (71% coverage).
 
 ## Modes
 
-| Mode   | What it does                                                                                    |
-| ------ | ----------------------------------------------------------------------------------------------- |
-| `off`  | nothing                                                                                         |
-| `hint` | default: a separate line under the poll, `autopilot: ★ <label>`; the poll stays yours to answer |
-| `auto` | answers for you, tells the assistant it did                                                     |
+| Mode   | What it does                                                                         |
+| ------ | ------------------------------------------------------------------------------------ |
+| `off`  | nothing                                                                              |
+| `hint` | default: a separate line under the poll, `★ <label>`; the poll stays yours to answer |
+| `auto` | answers for you, tells the assistant it did                                          |
 
 In `hint` and `auto` the journal records every poll the autopilot sees (the
 question, the options, the decision), whether it answered or left the poll to you.
@@ -74,9 +74,12 @@ box for you to send (where there is no dialog, it says so).
 
 ## Known limits
 
-- **One answer per turn is counted by `turn.start`.** It may also fire for a
-  subagent's loop, so the one-answer-per-turn guard can let a second answer
-  through; to be checked in a live session.
+- **One answer per turn is counted by `turn.start`.** Checked live: a subagent's
+  loop does not raise it (a subagent has no AskUserQuestion anyway), but a
+  finished background agent starts a new main-thread turn, so the guard resets
+  there.
+- **`/autopilot ask`** puts the correction note in the prompt box only when the
+  engine shows suggestions; otherwise the command reply carries the note to send.
 
 ## Install
 
