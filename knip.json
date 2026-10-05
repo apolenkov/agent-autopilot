@@ -3,8 +3,14 @@
   "entry": [
     "hooks/register.ts",
     "tests/**/*.test.ts",
-    "eslint/suppression-guard.ts"
+    "eslint/suppression-guard.ts",
+    "scripts/agreement.ts"
   ],
-  "project": ["{hooks,tests}/**/*.ts", "eslint/**/*.ts", "*.config.ts"],
+  "project": [
+    "{hooks,tests}/**/*.ts",
+    "eslint/**/*.ts",
+    "scripts/**/*.ts",
+    "*.config.ts"
+  ],
   "ignoreDependencies": ["claude-code"]
 }
