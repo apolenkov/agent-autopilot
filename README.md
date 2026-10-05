@@ -8,6 +8,8 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/apolenkov/agent-autopilot/badge)](https://scorecard.dev/viewer/?uri=github.com/apolenkov/agent-autopilot)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+![The autopilot answers a poll with one "(Recommended)" option and leaves an irreversible one to you](demo/demo.gif)
+
 A Claude Code mod that answers the assistant's `AskUserQuestion` polls for you,
 only when the assistant itself marked one option "(Recommended)" and nothing in
 the poll looks irreversible. The default mode only hints; it answers for you
