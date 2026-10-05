@@ -1,4 +1,7 @@
-# agent-autopilot
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.svg">
+  <img alt="agent-autopilot: answers Claude Code's polls only when it is safe" src=".github/assets/banner-light.svg" width="100%">
+</picture>
 
 [![ci](https://github.com/apolenkov/agent-autopilot/actions/workflows/ci.yml/badge.svg)](https://github.com/apolenkov/agent-autopilot/actions/workflows/ci.yml)
 [![codeql](https://github.com/apolenkov/agent-autopilot/actions/workflows/codeql.yml/badge.svg)](https://github.com/apolenkov/agent-autopilot/actions/workflows/codeql.yml)
