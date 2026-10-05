@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/apolenkov/agent-autopilot/compare/v0.2.0...v0.3.0) (2026-10-05)
+
+
+### Features
+
+* **agent-autopilot:** the measure in one line with the count of sessions ([#15](https://github.com/apolenkov/agent-autopilot/issues/15)) ([979d272](https://github.com/apolenkov/agent-autopilot/commit/979d27220089a1101b4a960ab9287238b071e69d))
+
 ## [0.2.0](https://github.com/apolenkov/agent-autopilot/compare/v0.1.0...v0.2.0) (2026-10-05)
 
 
