@@ -5,8 +5,10 @@
 
 [![ci](https://github.com/apolenkov/agent-autopilot/actions/workflows/ci.yml/badge.svg)](https://github.com/apolenkov/agent-autopilot/actions/workflows/ci.yml)
 [![codeql](https://github.com/apolenkov/agent-autopilot/actions/workflows/codeql.yml/badge.svg)](https://github.com/apolenkov/agent-autopilot/actions/workflows/codeql.yml)
+[![release](https://img.shields.io/github/v/release/apolenkov/agent-autopilot?sort=semver)](https://github.com/apolenkov/agent-autopilot/releases)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/apolenkov/agent-autopilot/badge)](https://scorecard.dev/viewer/?uri=github.com/apolenkov/agent-autopilot)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Claude Code ≥ 2.1.289](https://img.shields.io/badge/Claude%20Code-%E2%89%A5%202.1.289-8F5400)](https://claude.com/claude-code)
 
 ![The autopilot answers a poll with one "(Recommended)" option and leaves an irreversible one to you](demo/demo.gif)
 
