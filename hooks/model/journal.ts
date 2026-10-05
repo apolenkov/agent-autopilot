@@ -23,6 +23,11 @@ export interface Entry {
   readonly acted: boolean;
   /** The text that tripped the irreversible gate; null when none did. */
   readonly gate: string | null;
+  /**
+   * What the user answered themselves, a label or their own words; absent
+   * when the autopilot answered or the answer was not read.
+   */
+  readonly chosen?: string;
 }
 
 const TEXT_MAX = 200;
@@ -80,6 +85,47 @@ export const appended = (
   ].slice(-size);
 
 /**
+ * Notes the user's own answer on the newest entry of that poll still open.
+ * @param raw the journal as the store holds it
+ * @param question the poll's question, as the model asked it
+ * @param chosen what the user answered
+ * @returns the journal to store; unchanged when no open entry matches
+ */
+export const settled = (
+  raw: unknown,
+  question: string,
+  chosen: string,
+): readonly Entry[] => {
+  const entries = entriesOf(raw);
+  const asked = cut(question, TEXT_MAX);
+  const at = entries.findLastIndex(
+    (entry) =>
+      entry.question === asked && !entry.acted && entry.chosen === undefined,
+  );
+  return at === -1
+    ? entries
+    : entries.map((entry, index) =>
+        index === at ? { ...entry, chosen: cut(chosen, TEXT_MAX) } : entry,
+      );
+};
+
+/**
+ * The answer the user gave to a poll, read from what the tool returned.
+ * @param outcome what `next(e)` gave: anything, the hook trusts no shape
+ * @param question the poll's question, as the model asked it
+ * @returns the user's answer; undefined when the outcome holds none
+ */
+export const chosenOf = (
+  outcome: unknown,
+  question: string,
+): string | undefined => {
+  const result = (outcome as { result?: { answers?: Record<string, unknown> } })
+    .result;
+  const answer = result?.answers?.[question];
+  return typeof answer === "string" ? answer : undefined;
+};
+
+/**
  * The newest entries.
  * @param entries a journal, oldest first
  * @param count how many
@@ -101,7 +147,10 @@ const outcomeOf = (entry: Entry): string => {
   const kept = entry.acted
     ? `ответил «${String(pick)}»`
     : `★ «${String(pick)}»${reasonNote(entry)}`;
-  return pick === null ? `вам: ${entry.reason}${gateNote(entry)}` : kept;
+  const asked = pick === null ? `вам: ${entry.reason}${gateNote(entry)}` : kept;
+  return entry.chosen === undefined
+    ? asked
+    : `${asked} → вы: «${entry.chosen}»`;
 };
 
 /**

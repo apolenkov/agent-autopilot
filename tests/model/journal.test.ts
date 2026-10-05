@@ -2,11 +2,13 @@ import { expect, test } from "claude-code/testing";
 
 import {
   appended,
+  chosenOf,
   entriesOf,
   type Entry,
   keyOf,
   lastOf,
   linesOf,
+  settled,
 } from "../../hooks/model/journal.ts";
 
 const entry = (over: Partial<Entry> = {}): Entry => ({
@@ -70,4 +72,36 @@ test("a line says what was done", () => {
   expect(
     lineOf(entry({ pick: null, acted: false, reason: "multi-select" })),
   ).toContain("вам: multi-select [");
+});
+
+test("the user's answer goes on the newest open entry of that poll", () => {
+  const open = entry({ acted: false, ts: 1 });
+  const later = entry({ acted: false, ts: 2 });
+  const done = settled([open, later], "Which way?", "B");
+  expect(done.map((one) => one.chosen)).toEqual([undefined, "B"]);
+  expect(settled(done, "Which way?", "A")[0]?.chosen).toBe("A");
+});
+
+test("an answer finds no entry that was answered by the autopilot or by another poll", () => {
+  const all = [
+    entry({ acted: true }),
+    entry({ acted: false, question: "Other?" }),
+  ];
+  expect(settled(all, "Which way?", "B")).toEqual(all);
+});
+
+test("the answer is read from the tool's result, whatever its shape", () => {
+  const outcome = { result: { answers: { "Which way?": "B" } } };
+  expect(chosenOf(outcome, "Which way?")).toBe("B");
+  expect(chosenOf(outcome, "Nope?")).toBeUndefined();
+  expect(chosenOf({ deny: "no" }, "Which way?")).toBeUndefined();
+  expect(
+    chosenOf({ result: { answers: { "Which way?": 3 } } }, "Which way?"),
+  ).toBeUndefined();
+});
+
+test("a line says what the user answered", () => {
+  expect(lineOf(entry({ acted: false, chosen: "B" }))).toContain(
+    "★ «A (Recommended)» → вы: «B»",
+  );
 });
