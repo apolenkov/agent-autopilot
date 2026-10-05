@@ -1,6 +1,7 @@
 /**
  * Measures how often the star is what you picked, from the journals the
- * autopilot keeps in its store: `node scripts/agreement.ts [store.json ...]`.
+ * autopilot keeps in its store: `node scripts/agreement.ts [--line] [store.json ...]`.
+ * `--line` prints only the one-line summary of the blind (shadow) measure.
  * Without arguments it reads every autopilot store under ~/.claude/plugins/store.
  */
 import { readdirSync, readFileSync } from "node:fs";
@@ -8,12 +9,19 @@ import { homedir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 
-import { linesOfReport, reportOf } from "../hooks/model/agreement.ts";
+import {
+  lineOfReport,
+  linesOfReport,
+  reportOf,
+  sessionsOf,
+} from "../hooks/model/agreement.ts";
 import { entriesOf, type Entry } from "../hooks/model/journal.ts";
 
 const ARGS_SKIPPED = 2;
 const directory = path.join(homedir(), ".claude", "plugins", "store");
-const given = process.argv.slice(ARGS_SKIPPED);
+const args = process.argv.slice(ARGS_SKIPPED);
+const isLine = args.includes("--line");
+const given = args.filter((argument) => argument !== "--line");
 const stores =
   given.length > 0
     ? given
@@ -28,11 +36,19 @@ const held = stores.flatMap((file) =>
 );
 const entries = held.flatMap(([, raw]) => entriesOf(raw));
 const isBlind = (entry: Entry): boolean => entry.mode === "shadow";
-const lines = [
-  `журналов: ${String(held.length)}`,
-  "== ЗАМЕР (shadow: ★ человеку не показан) ==",
-  ...linesOfReport(reportOf(entries.filter((entry) => isBlind(entry)))),
-  "== ПОТОЛОК (hint и auto: ★ был на экране, вывода не даёт) ==",
-  ...linesOfReport(reportOf(entries.filter((entry) => !isBlind(entry)))),
-];
+const blind = entries.filter((entry) => isBlind(entry));
+const sessions = sessionsOf(
+  held.map(([, raw]) => entriesOf(raw).filter((entry) => isBlind(entry))),
+);
+const line = lineOfReport(reportOf(blind), sessions);
+const lines = isLine
+  ? [line]
+  : [
+      `журналов: ${String(held.length)}`,
+      "== ЗАМЕР (shadow: ★ человеку не показан) ==",
+      line,
+      ...linesOfReport(reportOf(blind)),
+      "== ПОТОЛОК (hint и auto: ★ был на экране, вывода не даёт) ==",
+      ...linesOfReport(reportOf(entries.filter((entry) => !isBlind(entry)))),
+    ];
 process.stdout.write(`${lines.join("\n")}\n`);

@@ -1,6 +1,13 @@
 import { expect, test } from "claude-code/testing";
 
-import { MIN_MEASURED, reportOf, wilson } from "../../hooks/model/agreement.ts";
+import {
+  lineOfReport,
+  MIN_MEASURED,
+  MIN_SESSIONS,
+  reportOf,
+  sessionsOf,
+  wilson,
+} from "../../hooks/model/agreement.ts";
 import type { Entry } from "../../hooks/model/journal.ts";
 
 const entry = (over: Partial<Entry> = {}): Entry => ({
@@ -16,7 +23,7 @@ const entry = (over: Partial<Entry> = {}): Entry => ({
   ...over,
 });
 
-const unanswered: Entry = {
+const unansweredEntry: Entry = {
   ts: 1,
   question: "Which way?",
   options: ["A (Recommended)", "B"],
@@ -43,7 +50,7 @@ test("only polls the user answered with a star are measured", () => {
     entry({ chosen: "B" }),
     entry({ acted: true, chosen: "Y" }),
     entry({ pick: null, chosen: "B" }),
-    unanswered,
+    unansweredEntry,
   ]);
   expect(report.polls).toBe(5);
   expect(report.starred).toBe(4);
@@ -75,4 +82,26 @@ test("the verdict needs the count and the interval", () => {
   expect(reportOf(mixed).verdict).toBe("below");
   const near = [...many(MIN_MEASURED - 4), ...many(4, { chosen: "B" })];
   expect(reportOf(near).verdict).toBe("open");
+});
+
+test("a session counts when it gave at least one measured poll", () => {
+  const answered = [entry()];
+  const unanswered = [unansweredEntry];
+  expect(sessionsOf([answered, unanswered, []])).toBe(1);
+  expect(sessionsOf([answered, answered])).toBe(2);
+});
+
+test("the daily line carries the count, the sessions, the agreement and the call", () => {
+  const few = lineOfReport(reportOf(many(3)), 1);
+  expect(few).toBe(
+    "замер 276.5: измерено 3 из 1 сессий, совпало 3/3 100%, 95%: 44%..100%, вывод: мало данных",
+  );
+  const enough = reportOf(many(MIN_MEASURED));
+  expect(lineOfReport(enough, MIN_SESSIONS)).toContain("включаем auto");
+  expect(lineOfReport(enough, MIN_SESSIONS - 1)).toContain("мало данных");
+  const poor = reportOf(many(MIN_MEASURED, { chosen: "B" }));
+  expect(lineOfReport(poor, 1)).toContain("держим hint");
+  expect(lineOfReport(reportOf([]), 0)).toBe(
+    "замер 276.5: измерено 0 из 0 сессий, совпало -, вывод: мало данных",
+  );
 });

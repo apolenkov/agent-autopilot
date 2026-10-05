@@ -7,6 +7,8 @@ import type { Entry } from "./journal.ts";
 
 /** Fewest measured polls before any verdict but "too few". */
 export const MIN_MEASURED = 30;
+/** Fewest sessions the measured polls must come from. */
+export const MIN_SESSIONS = 5;
 /** The agreement the star has to clear, the calibration's baseline. */
 const TARGET = 0.8;
 const Z = 1.96;
@@ -100,6 +102,20 @@ const grouped = (
 const placeOf = (entry: Entry): string =>
   entry.pick === (entry.options[0] ?? null) ? "first" : "later";
 
+const measuredOf = (entries: readonly Entry[]): readonly Entry[] =>
+  entries.filter(
+    (entry) =>
+      entry.pick !== null && !entry.acted && entry.chosen !== undefined,
+  );
+
+/**
+ * How many sessions gave at least one measured poll.
+ * @param journals one journal (its entries) per session
+ * @returns the count
+ */
+export const sessionsOf = (journals: readonly (readonly Entry[])[]): number =>
+  journals.filter((entries) => measuredOf(entries).length > 0).length;
+
 /**
  * Measures the star against the user's own answers.
  * @param entries journal entries, any sessions, any modes but `off`
@@ -107,9 +123,7 @@ const placeOf = (entry: Entry): string =>
  */
 export const reportOf = (entries: readonly Entry[]): Report => {
   const starred = entries.filter((entry) => entry.pick !== null);
-  const measured = starred.filter(
-    (entry) => !entry.acted && entry.chosen !== undefined,
-  );
+  const measured = measuredOf(entries);
   const share = shareOf(measured);
   const interval = wilson(share);
   return {
@@ -172,3 +186,20 @@ export const linesOfReport = (report: Report): readonly string[] => [
       `  «${entry.question}» ★ «${String(entry.pick)}» → «${String(entry.chosen)}»`,
   ),
 ];
+
+const lineVerdictOf = (report: Report, sessions: number): string => {
+  const steps: readonly (readonly [boolean, string])[] = [
+    [report.verdict === "below", "держим hint"],
+    [report.verdict === "enough" && sessions >= MIN_SESSIONS, "включаем auto"],
+  ];
+  return steps.find(([isMet]) => isMet)?.[1] ?? "мало данных";
+};
+
+/**
+ * The measure in one line, for a daily note.
+ * @param report what `reportOf` gave for the shadow polls
+ * @param sessions how many sessions gave a measured poll
+ * @returns the count, the sessions, the agreement, the interval, the call
+ */
+export const lineOfReport = (report: Report, sessions: number): string =>
+  `замер 276.5: измерено ${String(report.measured.total)} из ${String(sessions)} сессий, совпало ${shareText(report.measured)}${intervalText(report)}, вывод: ${lineVerdictOf(report, sessions)}`;
