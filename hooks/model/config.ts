@@ -5,7 +5,7 @@ import type { PluginOptions } from "claude-code";
 
 import type { AutopilotMode } from "../../types";
 
-const MODES: readonly AutopilotMode[] = ["off", "hint", "auto"];
+const MODES: readonly AutopilotMode[] = ["off", "hint", "auto", "shadow"];
 const DEFAULTS = { limit: 5, logSize: 100 } as const;
 
 /** What the hooks read from the options. */

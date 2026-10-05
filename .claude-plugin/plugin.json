@@ -20,11 +20,12 @@
     "mode": {
       "type": "string",
       "title": "Mode",
-      "description": "off: do nothing; hint: show a star under the recommended option, you still answer; auto: answer for you; /autopilot auto switches it on for one session only",
+      "description": "off: do nothing; hint: show a star under the recommended option, you still answer; auto: answer for you; shadow: show nothing, only record the recommendation and your pick; /autopilot auto switches it on for one session only",
       "options": [
         "off",
         "hint",
-        "auto"
+        "auto",
+        "shadow"
       ],
       "default": "hint"
     },

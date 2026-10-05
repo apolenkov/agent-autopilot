@@ -142,7 +142,7 @@ const gateNote = (entry: Entry): string =>
 const reasonNote = (entry: Entry): string =>
   entry.reason === "recommended" ? "" : ` (${entry.reason})`;
 
-const outcomeOf = (entry: Entry): string => {
+const openOutcomeOf = (entry: Entry): string => {
   const { pick } = entry;
   const kept = entry.acted
     ? `ответил «${String(pick)}»`
@@ -152,6 +152,10 @@ const outcomeOf = (entry: Entry): string => {
     ? asked
     : `${asked} → вы: «${entry.chosen}»`;
 };
+
+// A shadow entry stays unread by the user: it shows neither star nor pick.
+const outcomeOf = (entry: Entry): string =>
+  entry.mode === "shadow" ? "записано" : openOutcomeOf(entry);
 
 /**
  * Entries as lines for the user.
