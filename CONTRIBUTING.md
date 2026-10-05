@@ -41,8 +41,16 @@ when the repository has the secret `ANTHROPIC_API_KEY`; without the secret
 (a fork, a Dependabot run, no key yet) the job skips its steps and stays green,
 so until someone adds the key this is a local step, not an automatic check.
 
-It cannot see the status line or a pane (a headless session draws none): those
-are checked by hand in an interactive session.
+It cannot see a poll's dialog or the line under it (a headless session has
+none). `npm run smoke:live` does: it starts a real interactive session in tmux,
+makes the model ask two polls, captures the screen and checks that in `hint`
+the star shows under the dialog, in `shadow` it does not, and `/autopilot last`
+in `shadow` only says the poll was written down. It needs tmux and a Claude
+login, takes a minute or two for a few cents, and is local only (no tmux
+session with a login in CI). The model is haiku: once in six early runs it
+dropped "(Recommended)" from the label and the star check failed, so the
+prompts now ask for the labels exactly; a failure there is worth one rerun
+before it is called a regression.
 
 ## Dependency holds
 
