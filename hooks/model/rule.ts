@@ -46,7 +46,7 @@ export type Decision =
       /** The text that tripped the gate, when the reason is `irreversible`. */
       gate?: string;
     }>
-  | Readonly<{ kind: "pick"; label: string; index: number }>;
+  | Readonly<{ kind: "pick"; label: string }>;
 
 const MIN_OPTIONS = 2;
 
@@ -107,9 +107,8 @@ const textsOf = (question: Question): readonly string[] => [
 
 const pickOf = (question: Question, config: Config): Decision => {
   const gate = irreversibleIn(textsOf(question), config.extraDeny);
-  const index = starredOf(question)[0] ?? -1;
   return gate === undefined
-    ? { kind: "pick", label: labelOfStar(question), index }
+    ? { kind: "pick", label: labelOfStar(question) }
     : { kind: "ask-human", reason: "irreversible", gate };
 };
 

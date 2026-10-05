@@ -22,7 +22,6 @@ test("one plain starred question is answered with the option's own label", () =>
   expect(asked()).toEqual({
     kind: "pick",
     label: "Continue by the plan (Recommended)",
-    index: 0,
   });
 });
 
@@ -35,7 +34,7 @@ test("the star may stand anywhere and in Russian", () => {
         { label: "Третий" },
       ],
     }),
-  ).toEqual({ kind: "pick", label: "Второй (рекомендую)", index: 1 });
+  ).toEqual({ kind: "pick", label: "Второй (рекомендую)" });
 });
 
 test("the star is read in the label, not in the description", () => {
@@ -69,7 +68,7 @@ describe("a warning is not a star", () => {
         asked({
           options: [{ label }, { label: "Run tests (Recommended)" }],
         }),
-      ).toEqual({ kind: "pick", label: "Run tests (Recommended)", index: 1 });
+      ).toEqual({ kind: "pick", label: "Run tests (Recommended)" });
     });
   }
 });
