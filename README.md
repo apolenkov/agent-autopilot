@@ -95,7 +95,10 @@ needs about 54 polls, 95% about 25, 10 of 10 is not enough: its lower bound is
   (`autopilot: ответил по правилу (Recommended): <label>`) and the journal
   (`/autopilot last`); nothing in the transcript tells them apart.
 - **Interactive sessions only.** In `claude -p` and in subagents the assistant
-  has no `AskUserQuestion`, so there is nothing to answer there.
+  has no `AskUserQuestion`, so there is nothing to answer there. Checked live
+  (2.1.289): in `claude -p` the model reports it has no such tool and the mod
+  stays silent, with no errors in the log; an agent whose tools list is only
+  `AskUserQuestion` is refused by the engine ("not available to subagents").
 - **A wrong recommendation stays wrong.** If the assistant recommends badly, the
   autopilot follows it with confidence, up to 5 times per session (`limit`).
   Keep `hint` unless you watch the session.
@@ -126,7 +129,7 @@ Or try a checkout: `claude --plugin-dir /path/to/agent-autopilot`.
 
 | Setting     | Default | Meaning                                                                   |
 | ----------- | ------- | ------------------------------------------------------------------------- |
-| `mode`      | `hint`  | `off`, `hint` or `auto` at the start of a session                         |
+| `mode`      | `hint`  | `off`, `hint`, `auto` or `shadow` at the start of a session               |
 | `limit`     | 5       | most polls answered for you per session                                   |
 | `extraDeny` | empty   | comma-separated words that send a poll to you, added to the built-in list |
 | `logSize`   | 100     | journal entries kept per session                                          |
