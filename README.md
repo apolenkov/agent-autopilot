@@ -40,7 +40,10 @@ owner's choice in 80% of the 50 polls it covered (71% coverage).
 | ------ | ----------------------------------------------------------------------------------------------- |
 | `off`  | nothing                                                                                         |
 | `hint` | default: a separate line under the poll, `autopilot: ★ <label>`; the poll stays yours to answer |
-| `auto` | answers for you, tells the assistant it did, writes the journal                                 |
+| `auto` | answers for you, tells the assistant it did                                                     |
+
+In `hint` and `auto` the journal records every poll the autopilot sees (the
+question, the options, the decision), whether it answered or left the poll to you.
 
 `auto` set with `/autopilot auto` lasts for the session only: a new session
 (also after `/clear`) starts again in the mode from the settings (`hint` by
@@ -59,7 +62,7 @@ box for you to send (where there is no dialog, it says so).
   it, and whatever it then does is not rolled back.
 - **Indistinguishable in the transcript.** The tool result looks exactly like
   one you gave. The marker is the note added to the assistant's context
-  ("answered by the autopilot by the rule (Recommended)") and the journal
+  (`autopilot: ответил по правилу (Recommended): <label>`) and the journal
   (`/autopilot last`); nothing in the transcript tells them apart.
 - **Interactive sessions only.** In `claude -p` and in subagents the assistant
   has no `AskUserQuestion`, so there is nothing to answer there.
@@ -68,6 +71,12 @@ box for you to send (where there is no dialog, it says so).
   Keep `hint` unless you watch the session.
 - **Not a permission tool.** Permission prompts are the job of Claude Code's own
   auto mode; plan approval (`ExitPlanMode`) is never answered.
+
+## Known limits
+
+- **One answer per turn is counted by `turn.start`.** It may also fire for a
+  subagent's loop, so the one-answer-per-turn guard can let a second answer
+  through; to be checked in a live session.
 
 ## Install
 

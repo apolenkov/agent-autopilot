@@ -217,6 +217,8 @@ export const register: Register = (on, options) => {
     await quietly(start($, config));
     return started;
   });
+  // ponytail: `turn.start` may also fire for a subagent's loop, which lets the
+  // one-per-turn guard through; check live, no fix in v1.
   on("turn.start", async ($, e, next) => {
     await quietly(change($, (state) => withTurn(state, e.turnId)));
     return next(e);

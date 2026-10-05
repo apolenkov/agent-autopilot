@@ -19,6 +19,7 @@ picked that option; there is no undo for what the assistant then does. It
 answers only when the rule holds (see the README) and never more than `limit`
 times per session.
 
-It keeps a counter in the session state and a ring journal of its answers
-(`logSize` entries per session) in the plugin store on your machine. No
+It keeps a counter in the session state and a ring journal of every poll it
+sees (question, option labels, decision), answered or not, in `hint` and
+`auto` (`logSize` entries per session) in the plugin store on your machine. No
 network call, no model, no key, no telemetry; nothing leaves the machine.
