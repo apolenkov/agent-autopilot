@@ -1,5 +1,5 @@
 import type { On } from "claude-code";
-import { mock } from "claude-code/testing";
+import { mock, type MockClock } from "claude-code/testing";
 
 /** What the mocked world beneath the plugin saw, and what it answers. */
 export interface World {
@@ -23,6 +23,14 @@ export interface World {
   readonly notices: (string | undefined)[];
   readonly statuses: (string | undefined)[];
   readonly suggested: string[];
+  /** What the plugin's store holds, by key. */
+  readonly store: Map<string, unknown>;
+  /** The mocked clock: a guess runs on its timer. */
+  readonly clock: MockClock;
+  /** What haiku replies to a guess: a text, or "fail" for a rejection. */
+  model: string;
+  /** The prompts the model was asked, one per call. */
+  readonly asked: string[];
 }
 
 /**
@@ -46,9 +54,23 @@ export const world = (on: On): World => {
     notices: [],
     statuses: [],
     suggested: [],
+    store: new Map<string, unknown>(),
+    clock: mock.clock(on),
+    model: "ask",
+    asked: [],
   };
-  mock.clock(on);
-  mock.store(on);
+  on("store.get", (_$, e) => ({ value: seen.store.get(e.key) }));
+  on("store.set", (_$, e) => {
+    seen.store.set(e.key, e.value);
+    return { value: undefined };
+  });
+  on("store.delete", (_$, e) => {
+    seen.store.delete(e.key);
+    return { value: undefined };
+  });
+  on("store.keys", () => ({
+    value: Object.keys(Object.fromEntries(seen.store)),
+  }));
   on("session.id", () => {
     if (seen.isBroken) {
       throw new Error("session.id is down");
@@ -78,6 +100,27 @@ export const world = (on: On): World => {
     }
     seen.suggested.push(e.text);
     return { isShown: !seen.isSuggestHidden };
+  });
+  on("model.complete", (_$, e) => {
+    seen.asked.push(e.prompt);
+    const usage = {
+      input_tokens: 300,
+      output_tokens: 2,
+      cache_read_input_tokens: 0,
+      cache_creation_input_tokens: 0,
+    };
+    return {
+      value:
+        seen.model === "fail"
+          ? {
+              isAnswered: false as const,
+              reason: "api-error" as const,
+              status: 529,
+              error: "overloaded",
+              usage,
+            }
+          : { isAnswered: true as const, text: seen.model, usage },
+    };
   });
   on("tool.call", { tool: "AskUserQuestion" }, (_$, e) => {
     if (seen.isDialogShut) {

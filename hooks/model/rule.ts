@@ -105,8 +105,19 @@ const textsOf = (question: Question): readonly string[] => [
   ]),
 ];
 
+/**
+ * The irreversible word a poll carries anywhere in its text.
+ * @param question the poll's question
+ * @param config the user's extra words
+ * @returns the text that tripped the gate; undefined when none did
+ */
+export const gateOfPoll = (
+  question: Question,
+  config: Config,
+): string | undefined => irreversibleIn(textsOf(question), config.extraDeny);
+
 const pickOf = (question: Question, config: Config): Decision => {
-  const gate = irreversibleIn(textsOf(question), config.extraDeny);
+  const gate = gateOfPoll(question, config);
   return gate === undefined
     ? { kind: "pick", label: labelOfStar(question) }
     : { kind: "ask-human", reason: "irreversible", gate };

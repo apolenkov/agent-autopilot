@@ -28,6 +28,12 @@ export interface Entry {
    * when the autopilot answered or the answer was not read.
    */
   readonly chosen?: string;
+  /**
+   * Who made the pick: absent for the rule's `(Recommended)` star, `model`
+   * for a guess written in shadow, kept apart so the blind measure of the
+   * rule stays clean.
+   */
+  readonly source?: "model";
 }
 
 const TEXT_MAX = 200;
@@ -106,6 +112,37 @@ export const settled = (
     ? entries
     : entries.map((entry, index) =>
         index === at ? { ...entry, chosen: cut(chosen, TEXT_MAX) } : entry,
+      );
+};
+
+/**
+ * Writes the model's guess on the newest entry of that poll the rule left
+ * unstarred.
+ * @param raw the journal as the store holds it
+ * @param question the poll's question, as the model asked it
+ * @param label the option the model guessed
+ * @returns the journal to store; unchanged when no such entry is open
+ */
+export const guessed = (
+  raw: unknown,
+  question: string,
+  label: string,
+): readonly Entry[] => {
+  const entries = entriesOf(raw);
+  const asked = cut(question, TEXT_MAX);
+  const at = entries.findLastIndex(
+    (entry) =>
+      entry.question === asked &&
+      entry.pick === null &&
+      !entry.acted &&
+      entry.source === undefined,
+  );
+  return at === -1
+    ? entries
+    : entries.map((entry, index) =>
+        index === at
+          ? { ...entry, pick: cut(label, TEXT_MAX), source: "model" as const }
+          : entry,
       );
 };
 

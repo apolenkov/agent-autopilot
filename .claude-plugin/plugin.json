@@ -41,6 +41,12 @@
       "description": "Comma-separated words that send a poll to you, added to the built-in list; matched as whole words (Cyrillic ones by their start)",
       "default": ""
     },
+    "guess": {
+      "type": "boolean",
+      "title": "Model guess in shadow",
+      "description": "In shadow mode, haiku (your Claude Code subscription) guesses which option you would pick for a poll with no single recommended option, and the guess is only written to the journal, kept apart from the rule's measure; never shown, never acted on",
+      "default": true
+    },
     "logSize": {
       "type": "number",
       "title": "Journal size",

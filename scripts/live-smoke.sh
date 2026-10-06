@@ -2,7 +2,7 @@
 # Live smoke of what a headless run cannot show: a real interactive session in
 # tmux, checked on the captured screen: in hint a poll shows the star under its
 # dialog, in shadow it shows none and the journal only says "записано". Needs
-# tmux and a Claude login; costs a few cents (haiku, two small turns).
+# tmux and a Claude login; costs a few cents (haiku, three small turns).
 # Run: npm run smoke:live
 set -eu
 repo=$(cd "$(dirname "$0")/.." && pwd)
@@ -76,3 +76,26 @@ wait_for 'User answered' 60
 send '/autopilot last'
 wait_for 'записано \[shadow\]' 30
 echo "ok: the journal in shadow only says it was written down"
+
+# shadow, a poll with no star: haiku's guess is written down beside the user's
+# pick, in the journal only (the store file), never on the screen.
+send 'Use the AskUserQuestion tool once: question "Which database for a tiny local tool?" with options "SQLite", "Postgres", "MongoDB", the labels exactly as written, no (Recommended) anywhere. Then reply with only the answer.'
+wait_for 'Which database for a tiny local tool?' 120
+tmux send-keys -t "$session" C-m
+wait_for 'User answered' 60
+i=0
+while [ "$i" -lt 30 ]; do
+  grep -rqsE '"source": *"model"' "$home/.claude/plugins/store" && break
+  sleep 1
+  i=$((i + 1))
+done
+if ! grep -rqsE '"source": *"model"' "$home/.claude/plugins/store"; then
+  echo "FAIL: no model guess in the journal. Store:" >&2
+  cat "$home"/.claude/plugins/store/* >&2 || true
+  exit 1
+fi
+if screen | grep -q 'source'; then
+  echo "FAIL: the guess shows on the screen." >&2
+  exit 1
+fi
+echo "ok: shadow writes the model's guess to the journal and shows nothing"
