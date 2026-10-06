@@ -1,6 +1,6 @@
 {
   "name": "agent-autopilot",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Answers AskUserQuestion polls for you only when the assistant marked one option (Recommended) and nothing looks irreversible; default is a hint.",
   "author": {
     "name": "apolenkov",
