@@ -4,8 +4,15 @@
  */
 import type { AutopilotMode, AutopilotState } from "../../types";
 import type { Config } from "./config.ts";
+import { isGuessable } from "./guess.ts";
 import type { Entry } from "./journal.ts";
-import { decide, optionsOf, type Question } from "./rule.ts";
+import {
+  decide,
+  type Decision,
+  gateOfPoll,
+  optionsOf,
+  type Question,
+} from "./rule.ts";
 import { guardOf, type GuardReason, modeOf } from "./session.ts";
 
 /** The tool's result, as the output schema has it: the polls shown and the answers. */
@@ -27,6 +34,8 @@ export interface Plan {
   readonly notice?: string;
   /** What the journal gets, less the time. */
   readonly entry?: Omit<Entry, "ts">;
+  /** The poll the model is to guess, in shadow, after the entry is written. */
+  readonly guess?: Question;
 }
 
 /** What a plan is made from. */
@@ -97,17 +106,29 @@ const pickPlan = (poll: Poll, seen: Seen, label: string): Plan => {
     : held(seen, label, { guard, limit: poll.config.limit });
 };
 
+const askPlan = (
+  poll: Poll,
+  seen: Seen,
+  decision: Extract<Decision, { kind: "ask-human" }>,
+): Plan => ({
+  entry: entryOf(seen, {
+    pick: null,
+    reason: decision.reason,
+    acted: false,
+    gate: decision.gate ?? null,
+  }),
+  ...(poll.config.guess &&
+    seen.mode === "shadow" &&
+    isGuessable(decision.reason) &&
+    gateOfPoll(seen.question, poll.config) === undefined && {
+      guess: seen.question,
+    }),
+});
+
 const planFor = (poll: Poll, seen: Seen): Plan => {
   const decision = decide(poll.questions, poll.config);
   return decision.kind === "ask-human"
-    ? {
-        entry: entryOf(seen, {
-          pick: null,
-          reason: decision.reason,
-          acted: false,
-          gate: decision.gate ?? null,
-        }),
-      }
+    ? askPlan(poll, seen, decision)
     : pickPlan(poll, seen, decision.label);
 };
 

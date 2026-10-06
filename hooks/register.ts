@@ -24,15 +24,18 @@ import {
   statusTextOf,
   USAGE,
 } from "./model/format.ts";
+import { guessRequestOf, labelOfReply } from "./model/guess.ts";
 import {
   appended,
   chosenOf,
   entriesOf,
   type Entry,
+  guessed,
   keyOf,
   settled,
 } from "./model/journal.ts";
 import { planOf } from "./model/plan.ts";
+import type { Question } from "./model/rule.ts";
 import {
   answered,
   forSession,
@@ -93,6 +96,20 @@ const noticed = ($: Engine, id: string, text: string | undefined): void => {
   }
 };
 
+// Shadow: the model's guess at an unstarred poll goes into the journal beside
+// the user's own answer, shown to no one. No reply or no option = no guess.
+const guess = async ($: Engine, question: Question): Promise<void> => {
+  const reply = await $.model.complete(guessRequestOf(question));
+  const label = reply.isAnswered
+    ? labelOfReply(reply.text, question)
+    : undefined;
+  const key = keyOf(await $.session.id());
+  const held = label === undefined ? undefined : await $.store.get(key);
+  if (label !== undefined) {
+    await $.store.set(key, guessed(held, question.question, label));
+  }
+};
+
 // What the poll is answered with, when the autopilot answers it: the tool's
 // result, and the note the model reads after it.
 const pollResult = async (
@@ -113,6 +130,13 @@ const pollResult = async (
   }
   if (plan.entry !== undefined) {
     await record($, config, plan.entry);
+  }
+  const { guess: unstarred } = plan;
+  if (unstarred !== undefined) {
+    // After the poll is on its way: the guess waits for a model, not the user.
+    $.clock.after(0, () => {
+      void quietly(guess($, unstarred));
+    });
   }
   return plan.answer;
 };

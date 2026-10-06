@@ -17,6 +17,8 @@ export interface Config {
   readonly extraDeny: readonly string[];
   /** Entries of the journal kept per session, at least one. */
   readonly logSize: number;
+  /** In shadow, the model guesses polls the rule left unstarred, writing it down only. */
+  readonly guess: boolean;
 }
 
 const whole = (options: PluginOptions, key: keyof typeof DEFAULTS): number => {
@@ -47,4 +49,5 @@ export const configOf = (options: PluginOptions): Config => ({
   limit: whole(options, "limit"),
   extraDeny: wordsOf(options["extraDeny"]),
   logSize: whole(options, "logSize"),
+  guess: options["guess"] !== false,
 });

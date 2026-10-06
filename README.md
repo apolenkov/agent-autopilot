@@ -127,12 +127,13 @@ Or try a checkout: `claude --plugin-dir /path/to/agent-autopilot`.
 
 ## Settings
 
-| Setting     | Default | Meaning                                                                   |
-| ----------- | ------- | ------------------------------------------------------------------------- |
-| `mode`      | `hint`  | `off`, `hint`, `auto` or `shadow` at the start of a session               |
-| `limit`     | 5       | most polls answered for you per session                                   |
-| `extraDeny` | empty   | comma-separated words that send a poll to you, added to the built-in list |
-| `logSize`   | 100     | journal entries kept per session                                          |
+| Setting     | Default | Meaning                                                                                        |
+| ----------- | ------- | ---------------------------------------------------------------------------------------------- |
+| `mode`      | `hint`  | `off`, `hint`, `auto` or `shadow` at the start of a session                                    |
+| `limit`     | 5       | most polls answered for you per session                                                        |
+| `extraDeny` | empty   | comma-separated words that send a poll to you, added to the built-in list                      |
+| `logSize`   | 100     | journal entries kept per session                                                               |
+| `guess`     | true    | in `shadow` only: haiku guesses polls with no single star, written to the journal, never shown |
 
 See [SECURITY.md](SECURITY.md) for what it sees and keeps, and
 [CONTRIBUTING.md](CONTRIBUTING.md) to work on it.

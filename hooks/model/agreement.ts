@@ -199,7 +199,12 @@ const lineVerdictOf = (report: Report, sessions: number): string => {
  * The measure in one line, for a daily note.
  * @param report what `reportOf` gave for the shadow polls
  * @param sessions how many sessions gave a measured poll
+ * @param name what the line is called
  * @returns the count, the sessions, the agreement, the interval, the call
  */
-export const lineOfReport = (report: Report, sessions: number): string =>
-  `замер 276.5: измерено ${String(report.measured.total)} из ${String(sessions)} сессий, совпало ${shareText(report.measured)}${intervalText(report)}, вывод: ${lineVerdictOf(report, sessions)}`;
+export const lineOfReport = (
+  report: Report,
+  sessions: number,
+  name = "замер 276.5",
+): string =>
+  `${name}: измерено ${String(report.measured.total)} из ${String(sessions)} сессий, совпало ${shareText(report.measured)}${intervalText(report)}, вывод: ${lineVerdictOf(report, sessions)}`;

@@ -8,6 +8,7 @@ test("no options give the defaults: hint, five answers, a hundred entries", () =
     limit: 5,
     extraDeny: [],
     logSize: 100,
+    guess: true,
   });
 });
 
@@ -24,13 +25,21 @@ test("options are read, words split on commas and trimmed", () => {
     limit: 3,
     extraDeny: ["billing", "force-push", "a.b"],
     logSize: 20,
+    guess: true,
   });
+  expect(configOf({ guess: false }).guess).toBe(false);
 });
 
 test("bad values fall back: unknown mode, limit under one, text for a number", () => {
   expect(
     configOf({ mode: "turbo", limit: 0, logSize: "many", extraDeny: 7 }),
-  ).toEqual({ mode: "hint", limit: 5, extraDeny: [], logSize: 100 });
+  ).toEqual({
+    mode: "hint",
+    limit: 5,
+    extraDeny: [],
+    logSize: 100,
+    guess: true,
+  });
   expect(configOf({ limit: -2, logSize: NaN }).limit).toBe(5);
 });
 
