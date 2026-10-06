@@ -1,7 +1,9 @@
 /**
  * Measures how often the star is what you picked, from the journals the
- * autopilot keeps in its store: `node scripts/agreement.ts [--line] [store.json ...]`.
- * `--line` prints only the one-line summary of the blind (shadow) measure.
+ * autopilot keeps in its store: `node scripts/agreement.ts [--line] [--exclude=<id>] [store.json ...]`.
+ * `--line` prints only the one-line summary of the blind (shadow) measure;
+ * `--exclude=<id>` leaves out the sessions whose id starts with it (repeatable),
+ * for polls that would taint the measure, e.g. a session that always starred the first option.
  * Without arguments it reads every autopilot store under ~/.claude/plugins/store.
  */
 import { readdirSync, readFileSync } from "node:fs";
@@ -21,7 +23,13 @@ const ARGS_SKIPPED = 2;
 const directory = path.join(homedir(), ".claude", "plugins", "store");
 const args = process.argv.slice(ARGS_SKIPPED);
 const isLine = args.includes("--line");
-const given = args.filter((argument) => argument !== "--line");
+const EXCLUDE = "--exclude=";
+const excluded = args
+  .filter((argument) => argument.startsWith(EXCLUDE))
+  .map((argument) => `log:${argument.slice(EXCLUDE.length)}`);
+const given = args.filter(
+  (argument) => argument !== "--line" && !argument.startsWith(EXCLUDE),
+);
 const stores =
   given.length > 0
     ? given
@@ -32,7 +40,11 @@ const stores =
 const held = stores.flatMap((file) =>
   Object.entries(
     JSON.parse(readFileSync(file, "utf8")) as Record<string, unknown>,
-  ).filter(([key]) => key.startsWith("log:")),
+  ).filter(
+    ([key]) =>
+      key.startsWith("log:") &&
+      excluded.every((prefix) => !key.startsWith(prefix)),
+  ),
 );
 const entries = held.flatMap(([, raw]) => entriesOf(raw));
 const isBlind = (entry: Entry): boolean => entry.mode === "shadow";
