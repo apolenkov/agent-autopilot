@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/apolenkov/agent-autopilot/compare/v0.4.0...v0.5.0) (2026-10-06)
+
+
+### Features
+
+* **agent-autopilot:** let haiku guess polls with no star, in shadow only ([#20](https://github.com/apolenkov/agent-autopilot/issues/20)) ([3037a43](https://github.com/apolenkov/agent-autopilot/commit/3037a43079d182ec7dc5784bc52c70ec686b93ee))
+
 ## [0.4.0](https://github.com/apolenkov/agent-autopilot/compare/v0.3.0...v0.4.0) (2026-10-06)
 
 
