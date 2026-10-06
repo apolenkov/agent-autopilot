@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/apolenkov/agent-autopilot/compare/v0.3.0...v0.4.0) (2026-10-06)
+
+
+### Features
+
+* **agent-autopilot:** leave sessions out of the measure with --exclude ([#18](https://github.com/apolenkov/agent-autopilot/issues/18)) ([841b83f](https://github.com/apolenkov/agent-autopilot/commit/841b83fe8c1c51539b398b6d049397f04f969979))
+
 ## [0.3.0](https://github.com/apolenkov/agent-autopilot/compare/v0.2.0...v0.3.0) (2026-10-05)
 
 
