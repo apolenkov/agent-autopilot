@@ -137,4 +137,6 @@ Or try a checkout: `claude --plugin-dir /path/to/agent-autopilot`.
 See [SECURITY.md](SECURITY.md) for what it sees and keeps, and
 [CONTRIBUTING.md](CONTRIBUTING.md) to work on it.
 
+Live checks run locally: `npm run eval` (headless, on your Claude login; not in CI).
+
 `engine-types/` holds Claude Code's own API declarations, © Anthropic PBC and not covered by the MIT license; see [engine-types/NOTICE.md](engine-types/NOTICE.md).
