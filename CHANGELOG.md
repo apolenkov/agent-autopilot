@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/apolenkov/agent-autopilot/compare/v0.5.0...v0.5.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* **repo:** refuse a symlinked or misplaced types source ([#22](https://github.com/apolenkov/agent-autopilot/issues/22)) ([80c99d8](https://github.com/apolenkov/agent-autopilot/commit/80c99d8e930aff95b7e9adf668f491a86c32d6dc))
+
 ## [0.5.0](https://github.com/apolenkov/agent-autopilot/compare/v0.4.0...v0.5.0) (2026-10-06)
 
 
